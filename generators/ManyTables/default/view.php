@@ -4,20 +4,25 @@ echo "<?php\n";
 use Webix\Asset\WebixAsset;
 WebixAsset::register($this);
 <?= "?>" ?>
-
-
+<div id="layout" style="position: absolute; width: 100%; height: 100%; margin-top:50px;"> </div>
 <script type="text/javascript" charset="utf-8">
 
 
     new webix.ui({
-        parent: document.body,
+        container: "layout",
         multi:true,
         view:"accordion",
         cols:[
             { header: "Navigation", body:createTree()},
             { view: "resizer"},
             { header: "Currency", body:createGrid(), gravity:3 }
-        ]
+        ],
+        on: {
+            onAfterExpand: function(){
+                this.adjust();
+            }
+
+        }
     });
 
     function createTree(){
@@ -79,11 +84,27 @@ WebixAsset::register($this);
                     ],
                     select:true,
                     url: "./table_data",
-                    save: "./table_data"
+                    save: "connector->./table_data"
                 }
             ]
 
         };
+    }
+
+    if(window.attachEvent) {
+        window.attachEvent('onresize', function() {
+            if($$('accordion_layout'))
+                $$('accordion_layout').resize();
+        });
+    }
+    else if(window.addEventListener) {
+        window.addEventListener('resize', function() {
+            if($$('accordion_layout'))
+                $$('accordion_layout').resize();
+        }, true);
+    }
+    else {
+        //The browser does not support Javascript event binding
     }
 
 
