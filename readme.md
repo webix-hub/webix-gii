@@ -38,11 +38,8 @@ to the ```require``` section of your `composer.json` file.
     $config['modules']['gii'] = [
             'class' => 'yii\gii\Module',
             'generators' => [
-                'webix-one-table' => [
-                    'class' => 'Webix\Gii\SingleTable\Generator',
-                ],
                 'webix-many-tables' => [
-                                    'class' => 'Webix\Gii\ManyTables\Generator',
+                                    'class' => 'Webix\Gii\ManyTables\Generator'
                                 ],
             ],
         ];

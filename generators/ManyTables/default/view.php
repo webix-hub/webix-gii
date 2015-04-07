@@ -1,87 +1,89 @@
 <?php
 echo "<?php\n";
 ?>
-use DHTMLX\Asset;
+use Webix\Asset\WebixAsset;
+WebixAsset::register($this);
 <?= "?>" ?>
 
-<div id="layout" style="width:auto; height:800px;"> </div>
+
 <script type="text/javascript" charset="utf-8">
 
 
-    dhtmlxEvent(window,"load",function(){
-
-        var layout = new dhtmlXLayoutObject({
-            parent: "layout",
-            pattern: "2U"   // <-- pattern
-        });
-
-        var nav = layout.cells('a');
-        var table = layout.cells('b');
-
-        nav.setText('Navigation');
-        nav.setWidth(200);
-        table.setText("<?=ucfirst($tableName)?>");
-
-        createTree(nav);
-        createGrid(table);
-
-
+    new webix.ui({
+        parent: document.body,
+        multi:true,
+        view:"accordion",
+        cols:[
+            { header: "Navigation", body:createTree()},
+            { view: "resizer"},
+            { header: "Currency", body:createGrid(), gravity:3 }
+        ]
     });
 
-
-    function createGrid(cell) {
-        var mygrid = cell.attachGrid();
-        mygrid.setHeader("<?=$headers?>");
-        mygrid.init();
-
-        mygrid.load("./table_data");
-
-        var myDataProcessor = new dataProcessor("./table_data"); //lock feed url
-        myDataProcessor.init(mygrid); //link dataprocessor to the grid
-
-        var toolbar = cell.attachToolbar({
-            items:[
-                {id: "new", type: "button", text: "Add new row"},
-                {id: "delete", type: "button", text: "Remove" }
-            ]
-        });
-
-        toolbar.attachEvent("onClick", function(id){
-            switch (id) {
-                case 'new':
-                    var id=mygrid.uid(); mygrid.addRow(id,'',0); mygrid.showRow(id);
-                    break;
-                case 'delete':
-                    mygrid.deleteSelectedItem()
-                    break;
+    function createTree(){
+        return {
+            view: "tree",
+            data:
+                [
+                    {id:0, value:"Tables", open: true, data: [
+                        <?php foreach ($tables as $table): ?>
+                        {id:"<?=$table['url']?>", value:"<?=$table['name']?>"}<?=$table['comma']?>
+                        <?php endforeach;?>
+                    ]}
+                ],
+            ready:function(){ this.select("<?=$controllerName?>/table"); },
+            select:true,
+            on: {
+                onItemClick:  function(id){
+                    document.location =  "<?= Yii::$app->homeUrl?>"+id;
+                }
             }
-        });
+        };
     }
 
-    function createTree(cell) {
-        var mytree = cell.attachTree();
-
-        mytree.setImagesPath("/dhtmlx/codebase/imgs/dhxtree_skyblue/");
-        mytree.loadJSONObject(
-            {id:0, item:[
-                {id:2, text:"Tables", item:[
-                    <?php foreach ($tables as $table): ?>
-                    {id:"<?=$table['url']?>", text:"<?=$table['name']?>"}<?=$table['comma']?>
-                    <?php endforeach;?>
-                ]
+    function createGrid(){
+        return {
+            rows: [
+                {
+                    view:"toolbar",
+                    elements: [
+                        {
+                            view: "button",
+                            value: "Add new row",
+                            maxWidth: 100,
+                            click: webix.bind(function(){
+                                var id = webix.uid();
+                                $$("grid").add({Id: id}, 0);
+                            }, this)
+                        },
+                        {
+                            view: "button",
+                            value: "Remove",
+                            maxWidth: 100,
+                            click: webix.bind(function(){
+                                var sel = $$("grid").getSelectedId();
+                                $$("grid").editStop();
+                                if(sel) $$("grid").remove(sel);
+                            }, this)
+                        }
+                    ]
+                },
+                {
+                    view:"datatable",
+                    id: "grid",
+                    editable: true,
+                    columns: [
+                        <?php foreach ($fields as $number => $field): ?>
+                        { id: "<?=$field?>", name: "<?=$headers[$number]?>", editor: "text" },
+                        <?php endforeach;?>
+                    ],
+                    select:true,
+                    url: "./table_data",
+                    save: "./table_data"
                 }
             ]
-            }
-        );
 
-        mytree.openAllItems(0);
-
-        mytree.selectItem("<?=$controllerName?>/table");
-
-        //Redirect on click
-        mytree.attachEvent("onClick", function(id){
-            document.location = "<?= Yii::$app->homeUrl?>"+id;
-        });
+        };
     }
 
 

@@ -46,7 +46,7 @@ class Generator extends \yii\gii\Generator
      */
     public function getName()
     {
-        return 'DHTMLX Many Tables Generator';
+        return 'Webix Many Tables Generator';
     }
 
     /**
@@ -54,7 +54,7 @@ class Generator extends \yii\gii\Generator
      */
     public function getDescription()
     {
-        return 'This generator helps you to quickly generate many editable tables based on DHTMLX library';
+        return 'This generator helps you to quickly generate many editable tables based on Webix library';
     }
 
     /**
@@ -86,8 +86,8 @@ class Generator extends \yii\gii\Generator
     public function requiredTemplates()
     {
         return [
-//            'controller.php',
-//            'view.php',
+            'controller.php',
+            'view.php',
             'model.php',
         ];
     }
@@ -191,16 +191,20 @@ class Generator extends \yii\gii\Generator
                 $this->getViewFile($modelControllerName),
                 $this->render('view.php',['headers'    => $headers,
                                           'tableName' => $table,
+                                          'fields'  => $fieldsArray,
+                                          'headers'  => $headersArray,
                                           'tables'    => $tables,
                                           'controllerName' => strtolower($modelControllerName)])
+            );
+
+            $files[] = new CodeFile(
+                Yii::getAlias($this->viewPath) . '/layouts/fullscreen.php',
+                $this->render('layout.php')
             );
 
         }
 
         $this->lastControllerName = $modelControllerName;
-
-
-
 
         return $files;
     }

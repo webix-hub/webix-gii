@@ -9,13 +9,15 @@ echo "namespace app\\controllers;";
 
 <?= 'use app\models\\'.$modelName ?>;
 
-use DHTMLX\Connector\GridConnector;
+use DHTMLX\Connector\JSONDataConnector;
 use Yii;
 use yii\web\Controller;
 
 
 class <?= $controllerName ?>Controller extends Controller
 {
+
+    public $layout = "fullscreen";
 
     public $enableCsrfValidation = false;
 
@@ -28,9 +30,8 @@ class <?= $controllerName ?>Controller extends Controller
     {
 
         $model = new <?=$modelName?>();
-        $connector = new GridConnector($model,"PHPYii2");
-        $connector->configure($model->tableName(), "<?=$primaryKey?>", "<?=$fields?>");
-        $connector->render();
+        $connector = new JSONDataConnector($model,"PHPYii2");
+        $connector->render_table($model->tableName(), "<?=$primaryKey?>", "<?=$fields?>");
 
     }
 
