@@ -4,18 +4,23 @@ echo "<?php\n";
 use Webix\Asset\WebixAsset;
 WebixAsset::register($this);
 <?= "?>" ?>
-<div id="layout" style="position: absolute; width: 100%; height: 100%; margin-top:50px;"> </div>
+<div id="layout" style="position: absolute; width:100%; height: 100%;"> </div>
 <script type="text/javascript" charset="utf-8">
 
 
     new webix.ui({
         container: "layout",
         multi:true,
+        id: "accordion_layout",
         view:"accordion",
-        cols:[
-            { header: "Navigation", body:createTree()},
-            { view: "resizer"},
-            { header: "Currency", body:createGrid(), gravity:3 }
+        rows:[
+            {height:40},
+            {cols:[
+                { header: "Navigation", body:createTree()},
+                { view: "resizer"},
+                { header: "<?=$controllerName?>", body:createGrid(), gravity:3 }
+            ]
+            }
         ],
         on: {
             onAfterExpand: function(){
