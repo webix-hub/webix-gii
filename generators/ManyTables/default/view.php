@@ -30,6 +30,22 @@ WebixAsset::register($this);
         }
     });
 
+    function initDP(){
+        dp = new webix.DataProcessor({
+            url: 'connector->./table_data',
+            master: $$('grid'),
+            on: {
+                onAfterSaveError : function(id, status, response){
+                    if(response && response.details) webix.alert(response.details);
+                },
+                onBeforeDataSend : function(obj){
+                },
+                onAfterSync : function(id, text, data){
+                }
+            }
+        });
+    }
+
     function createTree(){
         return {
             view: "tree",
@@ -89,7 +105,11 @@ WebixAsset::register($this);
                     ],
                     select:true,
                     url: "./table_data",
-                    save: "connector->./table_data"
+                    on: {
+                        onAfterLoad: function(){
+                            initDP();
+                        }
+                    }
                 }
             ]
 
